@@ -1,4 +1,4 @@
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
@@ -6,7 +6,9 @@ class Settings(BaseSettings):
     SYNC_DATABASE_URL: str = "postgresql://user:password@localhost/dbname"
     ASSISTANT_DEPLOYMENT_URL: str = "https://api.langgraph.com"
     ASSISTANT_GRAPH_ID: str = "your_graph_id"
-    ASSISTANT_API_KEY: str = "your_api_key"
+    ASSISTANT_ID: str = "your_graph_id"
+    ASSISTANT_API_KEY: str = ""
+    DEBUG: bool = False
 
     class Config:
         env_file = ".env"
