@@ -47,13 +47,16 @@ async def handle_conversation(conversation: ConversationCreate, db: AsyncSession
         return StreamingResponse(stream_generator(), media_type="text/plain")
     else:
         try:
+            if not conv:
+                thread_id = await graph_manager._get_or_create_thread(conversation.conversation_id, thread_id)
+                conv = await crud_conv.create_conversation(db, conversation.conversation_id, thread_id)
             response_text = await graph_manager.send_message(
                 message=conversation.message,
                 conversation_id=conversation.conversation_id,
-                thread_id=thread_id
+                thread_id=conv.thread_id  # now conv is guaranteed to exist
             )
-            if conv:
-                await crud_conv.update_last_used(db, conv)  # db update
+            # Update last used timestamp.
+            await crud_conv.update_last_used(db, conv)
             return ConversationTextResponse(response=response_text)
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
