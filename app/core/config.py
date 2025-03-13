@@ -1,4 +1,6 @@
 from pydantic_settings import BaseSettings
+from pydantic import Field
+from typing import List
 
 
 class Settings(BaseSettings):
@@ -10,6 +12,12 @@ class Settings(BaseSettings):
     ASSISTANT_API_KEY: str = ""
     API_TITLE: str = "Assistant Conversation API"
     DEBUG: bool = False
+    # Use a custom json_loads function so that a comma-separated string is split into a list.
+    ALLOWED_ORIGINS: List[str] = Field(
+        default=["*"],
+        env="ALLOWED_ORIGINS",
+        json_loads=lambda v: [i.strip() for i in v.split(",")] if v else ["*"]
+    )
 
     class Config:
         env_file = ".env"
