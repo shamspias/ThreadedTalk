@@ -15,7 +15,7 @@ class ConversationResponse(BaseModel):
     last_used: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class DeleteInactiveConversations(BaseModel):
