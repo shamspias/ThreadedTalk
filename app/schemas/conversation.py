@@ -6,7 +6,7 @@ from typing import Optional
 class ConversationCreate(BaseModel):
     conversation_id: str
     message: str
-    image: Optional[list] = None
+    images: Optional[list] = None
     stream: Optional[bool] = False
 
 
