@@ -1,0 +1,25 @@
+# Core
+python-dotenv
+alembic
+SQLAlchemy[asyncio]
+
+# API
+fastapi
+uvicorn
+
+# Additional libraries
+langchain-core
+langgraph-sdk
+
+# If you want MySQL or PostgreSQL drivers:
+# For MySQL:
+# mysqlclient
+# or
+
+
+# For PostgreSQL:
+# asyncpg
+
+# Template
+
+#SMTP
