@@ -18,5 +18,9 @@ class ConversationResponse(BaseModel):
         from_attributes = True
 
 
+class ConversationTextResponse(BaseModel):
+    response: str
+
+
 class DeleteInactiveConversations(BaseModel):
     unused_from: datetime
