@@ -38,6 +38,7 @@ async def handle_conversation(conversation: ConversationCreate, db: AsyncSession
                 async for chunk in graph_manager.stream_message(
                         message=conversation.message,
                         conversation_id=conversation.conversation_id,
+                        images=conversation.images,
                         thread_id=thread_id
                 ):
                     yield chunk.encode("utf-8")
@@ -53,7 +54,8 @@ async def handle_conversation(conversation: ConversationCreate, db: AsyncSession
             response_text = await graph_manager.send_message(
                 message=conversation.message,
                 conversation_id=conversation.conversation_id,
-                thread_id=conv.thread_id  # now conv is guaranteed to exist
+                images=conversation.images,
+                thread_id=conv.thread_id
             )
             # Update last used timestamp.
             await crud_conv.update_last_used(db, conv)
