@@ -1,11 +1,12 @@
 import logging
+from app.core.config import settings
 from typing import Any, AsyncGenerator, Dict, List, Optional, Sequence, Union, Literal
 
 from langgraph_sdk import get_client
 
-# Configure logging
+# Set logger level based on DEBUG flag from configuration.
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)  # Adjust as needed
+logger.setLevel(logging.DEBUG if settings.DEBUG else logging.ERROR)
 
 
 class GraphManager:
