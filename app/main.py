@@ -1,9 +1,15 @@
 from fastapi import FastAPI
+import logging
+from app.core.config import settings
 from app.api.endpoints import conversation
 from app.db.session import engine
 from app.db.base import Base
 
-app = FastAPI(title="Assistant Conversation API")
+# Determine the global log level based on the DEBUG flag.
+log_level = logging.DEBUG if settings.DEBUG else logging.ERROR
+logging.basicConfig(level=log_level)
+
+app = FastAPI(title=settings.API_TITLE, debug=settings.DEBUG)
 
 app.include_router(conversation.router, prefix="/api")
 
