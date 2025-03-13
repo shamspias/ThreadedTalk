@@ -21,7 +21,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(conversation.router, prefix="/api")
+app.include_router(
+    conversation.router,
+    prefix="/api",
+    tags=["LangGraph SDK API"]
+)
 
 
 @app.on_event("startup")
