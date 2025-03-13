@@ -15,12 +15,12 @@ langgraph-sdk
 # If you want MySQL or PostgreSQL drivers:
 psycopg
 # For MySQL:
-# mysqlclient
-# or
-
-
-# For PostgreSQL:
-# asyncpg
+cryptography
+# Async MySQL driver for async SQLAlchemy
+asyncmy
+aiomysql
+# Sync MySQL driver for Alembic migrations (if not already installed)
+PyMySQL
 
 # Template
 
