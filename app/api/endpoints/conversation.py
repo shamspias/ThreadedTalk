@@ -5,19 +5,12 @@ from datetime import datetime
 from typing import AsyncGenerator
 
 from app.crud import conversation as crud_conv
-from app.schemas.conversation import ConversationCreate, ConversationResponse
-from app.db.session import async_session
+from app.schemas.conversation import ConversationCreate, ConversationTextResponse
+from app.db.session import get_db
 from app.services.assistant_client_manager import GraphManager
 from app.core.config import settings
 
 router = APIRouter()
-
-
-# Dependency for database session.
-async def get_db():
-    async with async_session() as session:
-        yield session
-
 
 # Instantiate the GraphManager.
 graph_manager = GraphManager(
@@ -28,7 +21,7 @@ graph_manager = GraphManager(
 )
 
 
-@router.post("/conversation", response_model=ConversationResponse)
+@router.post("/conversation", response_model=ConversationTextResponse)
 async def handle_conversation(conversation: ConversationCreate, db: AsyncSession = Depends(get_db)):
     conv = await crud_conv.get_conversation_by_id(db, conversation.conversation_id)
     thread_id = conv.thread_id if conv else None
@@ -59,16 +52,9 @@ async def handle_conversation(conversation: ConversationCreate, db: AsyncSession
                 conversation_id=conversation.conversation_id,
                 thread_id=thread_id
             )
-            if not conv:
-                thread_id = await graph_manager._get_or_create_thread(conversation.conversation_id, thread_id)
-                conv = await crud_conv.create_conversation(db, conversation.conversation_id, thread_id)
-            else:
-                await crud_conv.update_last_used(db, conv)
-            return ConversationResponse(
-                conversation_id=conversation.conversation_id,
-                thread_id=conv.thread_id if conv else thread_id,
-                last_used=datetime.utcnow()
-            )
+            if conv:
+                await crud_conv.update_last_used(db, conv)  # db update
+            return ConversationTextResponse(response=response_text)
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
 
@@ -80,7 +66,7 @@ async def delete_conversation(conversation_id: str, db: AsyncSession = Depends(g
         raise HTTPException(status_code=404, detail="Conversation not found")
     try:
         await graph_manager.delete_thread(conv.thread_id)
-    except Exception:
+    except Exception as e:
         # Log the error if needed.
         pass
     deleted = await crud_conv.delete_conversation(db, conversation_id)
