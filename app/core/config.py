@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     ASSISTANT_GRAPH_ID: str = "your_graph_id"
     ASSISTANT_ID: str = "your_graph_id"
     ASSISTANT_API_KEY: str = ""
+    API_TITLE: str = "Assistant Conversation API"
     DEBUG: bool = False
 
     class Config:
