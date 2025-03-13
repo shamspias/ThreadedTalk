@@ -1,12 +1,11 @@
-import os
 from logging.config import fileConfig
 
-from sqlalchemy import engine_from_config, create_engine, pool
+from sqlalchemy import create_engine, pool
 from alembic import context
 
 # Import your base metadata
-from app.database.models.base import Base
-from app.services.config import SYNC_DATABASE_URL
+from app.db.base import Base
+from app.core.config import settings
 
 # This is the Alembic Config object
 config = context.config
@@ -22,7 +21,7 @@ target_metadata = Base.metadata
 def run_migrations_offline():
     """Run migrations in 'offline' mode."""
     # Provide the URL for 'offline' migrations:
-    url = SYNC_DATABASE_URL
+    url = settings.SYNC_DATABASE_URL
     context.configure(
         url=url,
         target_metadata=target_metadata,
@@ -36,7 +35,7 @@ def run_migrations_offline():
 def run_migrations_online():
     """Run migrations in 'online' mode."""
     # Create sync engine from SYNC_DATABASE_URL
-    connectable = create_engine(SYNC_DATABASE_URL, poolclass=pool.NullPool)
+    connectable = create_engine(settings.SYNC_DATABASE_URL, poolclass=pool.NullPool)
 
     with connectable.connect() as connection:
         context.configure(connection=connection, target_metadata=target_metadata)
