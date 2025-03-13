@@ -1,5 +1,6 @@
 import logging
 from app.core.config import settings
+
 from typing import Any, AsyncGenerator, Dict, List, Optional, Sequence, Union, Literal
 
 from langgraph_sdk import get_client
@@ -239,6 +240,7 @@ class GraphManager:
             response_model_kwargs: Optional[Dict[str, Any]] = None,
             thread_id: Optional[str] = None,
             assistant_id: Optional[str] = None,
+            images: Optional[List[Any]] = None,
     ) -> Optional[str]:
         """
         Send a message to the assistant and return the final response.
@@ -252,6 +254,7 @@ class GraphManager:
             response_model_kwargs (Optional[Dict[str, Any]]): Additional configuration for the run.
             thread_id (Optional[str]): An optional thread identifier.
             assistant_id (Optional[str]): Optional assistant ID to override the default.
+            images (Optional[List[Any]]): Optional list of images to include with the message.
 
         Returns:
             Optional[str]: The assistant's response content, if available.
@@ -262,7 +265,11 @@ class GraphManager:
             if not aid:
                 raise ValueError("Assistant ID is not set. Please load or create an assistant first.")
             tid = await self._get_or_create_thread(conversation_id, thread_id)
-            input_payload = {"messages": [{"role": "user", "content": message}]}
+            # Build input payload with optional images if provided
+            if images:
+                input_payload = {"messages": [{"role": "user", "content": message}], "images": images}
+            else:
+                input_payload = {"messages": [{"role": "user", "content": message}]}
             if response_model_kwargs is None:
                 response_model_kwargs = {"max_tokens": max_tokens}
             run_config = {"configurable": {"response_model_kwargs": response_model_kwargs}}
@@ -297,6 +304,7 @@ class GraphManager:
             response_model_kwargs: Optional[Dict[str, Any]] = None,
             thread_id: Optional[str] = None,
             assistant_id: Optional[str] = None,
+            images: Optional[List[Any]] = None,
     ) -> AsyncGenerator[str, None]:
         """
         Stream the assistant's response as it is generated.
@@ -310,7 +318,10 @@ class GraphManager:
             if not aid:
                 raise ValueError("Assistant ID is not set. Please load or create an assistant first.")
             tid = await self._get_or_create_thread(conversation_id, thread_id)
-            input_payload = {"messages": [{"role": "user", "content": message}]}
+            if images:
+                input_payload = {"messages": [{"role": "user", "content": message}], "images": images}
+            else:
+                input_payload = {"messages": [{"role": "user", "content": message}]}
             if response_model_kwargs is None:
                 response_model_kwargs = {"max_tokens": max_tokens}
             run_config = {"configurable": {"response_model_kwargs": response_model_kwargs}}
