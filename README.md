@@ -35,6 +35,17 @@
 ```sh
 pip install -r requirements.txt
 ```
+### Database Migration
+Generate Initial Migration:
+
+```
+alembic revision --autogenerate -m "Initial migration"
+```
+Apply Migrations:
+
+```
+alembic upgrade head
+```
 
 ## **Running the Project**  
 ```sh
