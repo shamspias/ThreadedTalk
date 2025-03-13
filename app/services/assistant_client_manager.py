@@ -5,7 +5,7 @@ from langgraph_sdk import get_client
 
 # Configure logging
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)  # Adjust as necessary
+logger.setLevel(logging.DEBUG)  # Adjust as needed
 
 
 class GraphManager:
@@ -19,7 +19,7 @@ class GraphManager:
     Attributes:
         client: The LangGraph asynchronous client.
         graph_id: The ID of the graph for which operations are performed.
-        assistant_id: (Optional) The assistant ID to use for messaging.
+        assistant_id: (Optional) The assistant ID used for messaging operations.
     """
 
     def __init__(
@@ -206,18 +206,19 @@ class GraphManager:
         logger.debug(f"Thread state: {state}")
         return state
 
-    # ===== Run Operations (Assistant Interaction) =====
-    async def _ensure_thread(self, conversation_id: str, thread_id: Optional[str] = None) -> str:
+    async def _get_or_create_thread(self, conversation_id: str, thread_id: Optional[str] = None) -> str:
         """
-        Helper method to ensure a thread exists. If thread_id is provided, returns it;
-        otherwise, creates a new thread using the conversation_id as metadata.
+        Ensure a thread exists for a conversation.
+
+        If a thread_id is provided, it is returned. Otherwise, a new thread is created
+        with metadata including the conversation_id.
 
         Args:
             conversation_id (str): A conversation identifier.
-            thread_id (Optional[str]): An existing thread identifier.
+            thread_id (Optional[str]): Existing thread ID.
 
         Returns:
-            str: The thread identifier.
+            str: The thread ID.
         """
         if thread_id:
             logger.debug(f"Using existing thread_id: {thread_id}")
@@ -228,6 +229,7 @@ class GraphManager:
         logger.info(f"New thread created with id: {new_thread_id}")
         return new_thread_id
 
+    # ===== Run Operations (Assistant Interaction) =====
     async def send_message(
             self,
             message: str,
@@ -240,7 +242,7 @@ class GraphManager:
         """
         Send a message to the assistant and return the final response.
 
-        This method creates a run, waits for completion, and extracts the last AI response.
+        This method creates a run, waits for its completion, and extracts the last AI response.
 
         Args:
             message (str): The user's message.
@@ -258,7 +260,7 @@ class GraphManager:
             aid = assistant_id or self.assistant_id
             if not aid:
                 raise ValueError("Assistant ID is not set. Please load or create an assistant first.")
-            tid = await self._ensure_thread(conversation_id, thread_id)
+            tid = await self._get_or_create_thread(conversation_id, thread_id)
             input_payload = {"messages": [{"role": "user", "content": message}]}
             if response_model_kwargs is None:
                 response_model_kwargs = {"max_tokens": max_tokens}
@@ -306,7 +308,7 @@ class GraphManager:
             aid = assistant_id or self.assistant_id
             if not aid:
                 raise ValueError("Assistant ID is not set. Please load or create an assistant first.")
-            tid = await self._ensure_thread(conversation_id, thread_id)
+            tid = await self._get_or_create_thread(conversation_id, thread_id)
             input_payload = {"messages": [{"role": "user", "content": message}]}
             if response_model_kwargs is None:
                 response_model_kwargs = {"max_tokens": max_tokens}
@@ -365,7 +367,7 @@ class GraphManager:
         logger.info("Creating cron job for thread...")
         cron = await self.client.crons.create_for_thread(
             thread_id=thread_id,
-            assistant_id=self.graph_id,  # Assuming the cron runs use the same assistant/graph
+            assistant_id=self.graph_id,
             schedule=schedule,
             input=input_data,
             metadata=metadata,
