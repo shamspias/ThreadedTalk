@@ -1,4 +1,5 @@
 # Core
+pydantic-settings
 python-dotenv
 alembic
 SQLAlchemy[asyncio]
@@ -12,6 +13,7 @@ langchain-core
 langgraph-sdk
 
 # If you want MySQL or PostgreSQL drivers:
+psycopg
 # For MySQL:
 # mysqlclient
 # or
