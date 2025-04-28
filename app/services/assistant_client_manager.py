@@ -319,14 +319,15 @@ class GraphManager:
                 raise ValueError("Assistant ID is not set. Please load or create an assistant first.")
             tid = await self._get_or_create_thread(conversation_id, thread_id)
             if images:
-                input_payload = {"messages": [{"role": "user", "content": message}], "images": images}
+                input_payload = {"messages": [{"role": "user", "content": message}], "images": images,
+                                 "stream_response": True}
             else:
-                input_payload = {"messages": [{"role": "user", "content": message}]}
+                input_payload = {"messages": [{"role": "user", "content": message}], "stream_response": True}
             if response_model_kwargs is None:
                 response_model_kwargs = {"max_tokens": max_tokens}
             run_config = {"configurable": {"response_model_kwargs": response_model_kwargs}}
 
-            async for chunk in self.client.runs.stream(
+            async for chunk in self.client.runs.astream(
                     thread_id=tid,
                     assistant_id=aid,
                     input=input_payload,
