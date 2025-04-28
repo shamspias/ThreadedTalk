@@ -1,0 +1,14 @@
+### Create a conversation
+POST http://127.0.0.1:8000/api/conversation
+Accept: application/json
+Content-Type: application/json
+
+{
+  "conversation_id": "12345",
+  "message": "hello",
+  "images": [
+  ],
+  "stream": true
+}
+
+###  "message": "write about current programing world in 1000 worlds",
